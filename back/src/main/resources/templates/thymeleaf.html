@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<table border="1" cellpadding="0" cellspacing="0" width="100%">
+    <tbody style="text-align:center;width: 600px" align="center">
+    <table style="width: 600px;text-align: center">
+        <tr align="center" th:width="600px"
+            style="width:600px;margin-top:100px;text-align:center;display:block;margin:auto;">
+            <td>
+                <table>
+                    <tr>
+                        <td align="center"
+                            style="font-size:50px;text-align:center;display:block;margin-top:50px;font-weight:bold;">
+                            Thank
+                            You!
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td style="font-size:20px;text-align:center;display:block;margin-top:50px;font-weight:bold">
+                            尊敬的
+                        </td>
+                        <td th:text="${customerName}"></td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td style="font-size:15px;text-align:center;display:block;margin-top:10px">
+                            感谢您对MaetS Games商城的光顾!
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td style="font-size:30px;text-align:center;display:block;margin-top:30px;font-weight:bold">
+                            发票ID:
+                        <td th:text="${invoiceId}"></td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td style="font-size:15px;text-align:center;display:block;margin-top:10px;color:#B2B2B2;">
+                            (请保留本收据，以备后用。)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr style="width:600px;margin-top:100px;text-align:center;display:block;margin:auto;">
+            <td>
+                <table>
+                    <tr>
+                        <td
+                                style="color:#B2B2B2;font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold"
+                        >您的订单信息：
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <el-divider></el-divider>
+                <table>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold;width:300px"
+                                    >订单ID：
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:30px;"
+                                        th:text="${orderNumbers}"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold">
+                                        账单地址：
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:30px;"
+                                        th:text="${customerEmail}">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold">
+                                        订购日期：
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:15px;"
+                                        th:text="${createdTime}">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold">
+                                        来源：
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold">
+                                        MeatS Games Store
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                <table border="0"
+                       cellpadding="0"
+                       cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <th style="width:120px;height:150px">商品</th>
+                        <th style="width:120px;height:150px">名称</th>
+                        <th style="width:120px;height:150px">数量</th>
+                        <th style="width:120px;height:150px">单价</th>
+                        <th style="width:120px;height:150px">小计</th>
+                    </tr>
+                    <tr th:each="list:${lists}">
+                        <td><img width="100px" th:src="@{${list.getString('pictureUrl')}}"/></td>
+                        <td th:text="${list.getString('orderGoodsName')}"></td>
+                        <td th:text="${list.getString('orderPurchaseNumbers')}"></td>
+                        <td th:text="${list.getString('orderGoodsPrice')}"></td>
+                        <td th:text="${list.getString('subtotal')}"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td style="width:600px;margin-top:20px;text-align:right;display:block;">
+                            总计：￥
+                        </td>
+                        <td th:text="${totalPrice}">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <el-divider></el-divider>
+        <tr>
+            <td style="min-width: 600px" align="center">
+                所有在MaetS Games商城购买的游戏都可以在购买后的14天内退款（预购游戏则可在发售后14天内退款），但前提是游戏时间不得超过2小时。
+            </td>
+        </tr>
+        <el-divider></el-divider>
+        <tr>
+            <td style="min-width: 600px" align="center">
+                MaetS Games 科技有限公司
+            </td>
+        </tr>
+        <tr>
+            <td style="min-width: 600px" align="center">
+                广东省东莞市东城区东平街君豪商业中心20层达内教育CGB2008班
+            </td>
+        </tr>
+    </table>
+    </tbody>
+</table>
+
+</body>
+</html>

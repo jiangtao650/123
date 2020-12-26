@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.BusinessDao">
+
+    <delete id="deleteCommodity">
+        DELETE
+        FROM
+        goods_manage
+        WHERE
+        goods_name=#{goodsName}
+        AND
+        business_id=#{userId}
+    </delete>
+
+
+    <select id="selectBusiness" resultType="com.alibaba.fastjson.JSONObject">
+       select
+        business_name businessName,
+        business_phone businessPhone,
+        business_address businessAddress,
+        business_open_time businessOpenTime,
+        business_close_time businessCloseTime,
+        business_brief businessBrief
+        from business where user_id=#{userId}
+   </select>
+
+    <update id="updateBusinessInformation">
+        update business set
+        <trim suffixOverrides=",">
+            <if test="!@com.heeexy.example.util.StringTools@isNullOrEmpty(businessName)">
+                business_name=#{businessName},
+            </if>
+            <if test="!@com.heeexy.example.util.StringTools@isNullOrEmpty(businessPhone)">
+                business_phone=#{businessPhone},
+            </if>
+            <if test="!@com.heeexy.example.util.StringTools@isNullOrEmpty(businessAddress)">
+                business_address=#{businessAddress},
+            </if>
+            business_open_time=#{businessOpenTime},
+            business_close_time=#{businessCloseTime},
+            <if test="!@com.heeexy.example.util.StringTools@isNullOrEmpty(businessBrief)">
+                business_brief=#{businessBrief},
+            </if>
+        </trim>
+        where user_id=#{userId}
+    </update>
+    <update id="updateCommodity">
+        update goods_manage set goods_name=#{goodsName},goods_price=#{goodsPrice},goods_numbers=#{goodsNumbers},
+        goods_category_id=#{goodsCategoryId},goods_sale_status=#{goodsSaleStatus},goods_brief=#{goodsBrief},pictureUrl=#{pictureUrl}
+        where id=#{commodityId} and business_id=#{userId}
+    </update>
+
+    <select id="selectCommodityName" resultType="com.alibaba.fastjson.JSONObject">
+        select a.goods_name goodsName,a.goods_price goodsPrice,a.goods_numbers goodsNumbers,a.goods_category_id goodsCategoryId,
+        a.goods_sale_status goodsSaleStatus,a.goods_brief goodsBrief,a.business_id businessId,a.pictureUrl,b.goods_category_name goodsCategoryName
+        FROM
+        goods_manage a left join goods_category b
+        ON
+        a.goods_category_id=b.goods_category_id
+        WHERE
+        a.business_id=#{userId}
+        <if test="input != null">
+            and (a.goods_name like CONCAT("%",#{input},"%") )
+        </if>
+
+    </select>
+    <select id="pageNum" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        goods_manage
+    </select>
+    <select id="allNum" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        a.goods_name goodsName,a.goods_price goodsPrice,a.goods_numbers goodsNumbers,a.goods_category_id
+        goodsCategoryId,
+        a.goods_sale_status goodsSaleStatus,a.goods_brief goodsBrief,a.id commodityId,a.pictureUrl,b.goods_category_name
+        goodsCategoryName
+        FROM
+        goods_manage a left join goods_category b
+        ON
+        a.goods_category_id=b.goods_category_id
+        WHERE
+        a.business_id=#{userId}
+        <if test="id!=null">
+            commodityId=#{id}
+        </if>
+        ORDER BY a.id
+        LIMIT #{offSet}, #{pageRow}
+
+    </select>
+    <select id="selectId" resultType="com.alibaba.fastjson.JSONObject">
+        select id from goods_manage where goods_name=#{goodsName}
+    </select>
+    <select id="selectCommodityId" resultType="com.alibaba.fastjson.JSONObject">
+        select * from goods_manage where goods_name=#{goodsName}
+    </select>
+    <select id="selectListCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        (select goods_name goodsName,goods_price goodsPrice,goods_numbers goodsNumbers,goods_category_id
+        goodsCategoryId,
+        goods_sale_status goodsSaleStatus,goods_brief goodsBrief,business_id businessId
+        from goods_manage
+        where business_id=#{userId}
+        <if test="title != null">
+            and (goods_name like CONCAT("%",#{input},"%") or goods_category_id like CONCAT("%",#{input},"%"))
+        </if>)ym1
+    </select>
+
+    <insert id="addCommodity">
+        insert into goods_manage(goods_name,goods_price,goods_numbers,goods_category_id,
+        goods_sale_status,goods_brief,delete_status,business_id,pictureUrl)
+        values
+        (#{goodsName},#{goodsPrice},#{goodsNumbers},#{goodsCategoryId},
+        #{goodsSaleStatus},#{goodsBrief},1,#{userId},#{pictureUrl})
+    </insert>
+    <insert id="importExcel">
+        insert into goods_manage(goods_name,goods_price,goods_numbers,goods_category_id,
+        goods_sale_status,goods_brief,delete_status,business_id)
+        values
+        (#{goodsName},#{goodsPrice},#{goodsNumbers},#{goodsCategoryId},
+        #{goodsSaleStatus},#{goodsBrief},1,#{userId})
+    </insert>
+    <select id="categoryCount" resultType="java.lang.Integer">
+        select count(1) from goods_category
+    </select>
+    <select id="categoryList" resultType="com.alibaba.fastjson.JSONObject">
+        select goods_category_name goodsCategoryName,goods_category_id goodsCategoryId from goods_category where business_id=#{userId}
+    </select>
+    <select id="categoryName" resultType="com.alibaba.fastjson.JSONObject">
+        select * from goods_category where business_id=#{userId} and (goods_category_name=#{goodsCategoryName} or goods_category_id=#{goodsCategoryId})
+    </select>
+
+    <insert id="addCategory">
+        insert into
+        goods_category(goods_category_name,goods_category_id,delete_status,business_id)
+        values
+        (#{goodsCategoryName},#{goodsCategoryId},1,#{userId})
+    </insert>
+    <delete id="deleteCategory">
+        delete from goods_category where business_id=#{userId} and goods_category_name=#{goodsCategoryName}
+    </delete>
+    <delete id="deleteShoppingCart">
+        delete from shopping_cart where customer_id=#{userId} and goods_name=#{goodsName}
+    </delete>
+    <update id="updateCategory">
+        update goods_category set goods_category_name=#{goodsCategoryName} where business_id=#{userId}
+        and goods_category_id=#{goodsCategoryId}
+    </update>
+    <select id="selectCategoryListCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        (select goods_category_name goodsCategoryName,goods_category_id goodsCategoryId
+        from goods_category
+        where business_id=#{userId}
+        <if test="title != null">
+            and goods_category_name like CONCAT("%",#{input},"%")
+        </if>)ym1
+    </select>
+    <select id="selectCategoryName" resultType="com.alibaba.fastjson.JSONObject">
+        select goods_category_name goodsCategoryName,goods_category_id goodsCategoryId
+        from goods_category
+        where business_id=#{userId}
+        <if test="input != null">
+            and goods_category_name like CONCAT("%",#{input},"%")
+        </if>
+        ORDER BY id
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+    <select id="selectCategoryId" resultType="com.alibaba.fastjson.JSONObject">
+        select goods_category_name goodsCategoryName from goods_category where (goods_category_id=#{goodsCategoryId} and business_id=#{userId})
+    </select>
+    <select id="mallCategoryDisplay" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        a.goods_name goodsName,a.goods_price goodsPrice,a.goods_numbers goodsNumbers,a.goods_category_id
+        goodsCategoryId,
+        a.goods_sale_status goodsSaleStatus,a.goods_brief goodsBrief,a.id commodityId,a.pictureUrl,b.goods_category_name
+        goodsCategoryName
+        FROM
+        goods_manage a left join goods_category b
+        ON
+        a.goods_category_id=b.goods_category_id
+        <if test="goodsCategoryId!=0">
+            WHERE
+            a.goods_category_id=#{goodsCategoryId}
+        </if>
+        ORDER BY a.id
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+    <select id="selectAllId" resultType="java.lang.Integer">
+        select id from goods_manage
+    </select>
+    <select id="walkHorseLight" resultType="com.alibaba.fastjson.JSONObject">
+        select a.goods_name goodsName,a.goods_price goodsPrice,a.goods_numbers goodsNumbers,a.goods_category_id
+        goodsCategoryId,
+        a.goods_sale_status goodsSaleStatus,a.goods_brief goodsBrief,a.id commodityId,a.pictureUrl,b.goods_category_name
+        goodsCategoryName from
+        goods_manage a left join goods_category b
+        ON
+        a.goods_category_id=b.goods_category_id
+        <if test="recommend!=0">
+        where recommend=1
+        </if>
+        <if test="id!=null">
+            where commodityId=#{id}
+        </if>
+    </select>
+    <select id="commodityDetails" resultType="com.alibaba.fastjson.JSONObject">
+        select a.goods_name goodsName,a.goods_price goodsPrice,a.goods_numbers goodsNumbers,a.goods_category_id
+        goodsCategoryId,
+        a.goods_sale_status goodsSaleStatus,a.goods_brief goodsBrief,a.id,a.pictureUrl,b.goods_category_name
+        goodsCategoryName from goods_manage a left join goods_category b
+        ON
+        a.goods_category_id=b.goods_category_id where a.id=#{0}
+    </select>
+    <select id="shoppingCart" resultType="com.alibaba.fastjson.JSONObject">
+        select
+        pictureUrl,goods_name goodsName,goods_price goodsPrice,goods_style goodsStyle,
+        goods_sale_status goodsSaleStatus,purchase_numbers purchaseNumbers,goods_id goodsId
+        from
+        shopping_cart
+        where
+        customer_id=#{userId}
+    </select>
+    <insert id="addShoppingCart">
+        insert into
+        shopping_cart(delete_status,pitch_on,customer_id,goods_id,pictureUrl,
+        goods_name,goods_price,goods_style,purchase_numbers,goods_sale_status,
+        subtotal)
+        values
+        (1,1,#{userId},#{id},#{pictureUrl},#{goodsName},#{goodsPrice},#{goodsStyle},
+        #{purchaseNumbers},#{goodsSaleStatus},#{subtotal})
+    </insert>
+</mapper>

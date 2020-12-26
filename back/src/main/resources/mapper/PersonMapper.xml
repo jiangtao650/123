@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.PersonDao">
+    <select id="personInformation" resultType="com.alibaba.fastjson.JSONObject">
+        select customer_name nickName,customer_phone_number customerPhoneName,customer_balance customerBalance,
+        email
+        from customer where customer_id=#{userId}
+    </select>
+
+    <update id="recharge" >
+        update customer set customer_balance=#{customerBalance} where customer_id=#{userId}
+    </update>
+
+    <select id="selectCustomerBalance" resultType="com.alibaba.fastjson.JSONObject">
+        select customer_balance customerBalance from customer where customer_id=#{userId}
+    </select>
+    <select id="selectPassword" resultType="com.alibaba.fastjson.JSONObject">
+        select password from sys_user where id=#{userId}
+    </select>
+    <select id="selectOrderInformation" resultType="com.alibaba.fastjson.JSONObject">
+        select customer_address customerAddress,created_time createdTime,pictureUrl,order_goods_name orderGoodsName,
+        order_purchase_numbers orderPurchaseNumbers,order_goods_price orderGoodsPrice,subtotal,total_price totalPrice,
+        customer_name customerName
+        from submit_order
+        where order_uuid=#{orderNumbers}
+    </select>
+</mapper>

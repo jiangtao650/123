@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.RegisterDao">
+    <insert id="insertUserCustomer">
+        <selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID ()
+        </selectKey>
+        INSERT INTO sys_user
+        (username, password, nickname, role_id,delete_status) VALUES
+        (#{username}, #{password}, #{nickname}, #{roleId},1)
+    </insert>
+    <insert id="insertCustomer">
+        insert into customer(delete_status,customer_name,customer_phone_number,customer_id,customer_balance)
+        values (1,#{customerName},#{customerPhoneNumber},#{newPersonId},0)
+    </insert>
+    <insert id="insertBusiness">
+        insert into business(business_name,business_phone,business_address,business_open_time,business_close_time,business_brief,user_id,delete_status)
+        values (#{businessName},#{businessPhone},#{businessAddress},#{businessOpenTime},#{businessCloseTime},#{businessBrief},#{newPersonId},1)
+    </insert>
+    <select id="queryExistUsername" resultType="java.lang.Integer">
+        select count(0)
+         from sys_user
+         WHERE username=#{username}
+         AND delete_status='1';
+    </select>
+    <select id="selectId" resultType="java.lang.String">
+        select id,nickname from sys_user where username=#{username} and delete_status='1';
+    </select>
+</mapper>

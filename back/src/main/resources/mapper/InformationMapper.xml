@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.InformationDao">
+    <select id="list" resultType="com.alibaba.fastjson.JSONObject">
+    select id,content,create_time,update_time from article
+        <if test="id != null">
+            WHERE
+            id=#{id}
+        </if>
+ </select>
+    <update id="update" parameterType="com.alibaba.fastjson.JSONObject">
+    UPDATE
+    article
+    SET
+            <if test="content!=null">content=#{content}</if>
+            <if test="detele_status!=null">detele_status=2</if>
+    WHERE
+            id=#{id}
+    </update>
+</mapper>

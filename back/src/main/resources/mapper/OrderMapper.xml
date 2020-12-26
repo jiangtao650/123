@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.OrderDao">
+
+    <select id="selectCustomerAddress" resultType="com.alibaba.fastjson.JSONObject">
+        select customer_name customerName,customer_address customerAddress,
+        customer_phone_number customerPhoneNumber
+        from customer_address
+        where customer_id=#{userId} and default_address=1
+    </select>
+
+    <insert id="createOrder">
+        insert into
+        submit_order(delete_status,order_uuid,order_status,pictureUrl,order_goods_name,
+        order_goods_price,order_goods_style,payment_way,order_purchase_numbers,subtotal,
+        refund_order_status,business_id,customer_address,customer_phone_number,
+        customer_name,customer_comment,total_price)
+        values
+        (1,#{orderNumbers},1,#{pictureUrl},#{goodsName},#{goodsPrice},#{goodsStyle},
+        #{paymentWay},#{purchaseNumbers},#{subtotal},0,#{businessId},
+        #{customerAddress},#{customerPhoneNumber},#{customerName},#{customerComment},#{totalPrice})
+    </insert>
+
+    <select id="selectCustomerInformation" resultType="com.alibaba.fastjson.JSONObject">
+        select id,customer_name customerName,customer_address customerAddress,customer_phone_number
+        customerPhoneNumber,default_address defaultAddress
+        from customer_address where customer_id=#{userId}
+        <if test="addressNumbers!=null">
+            and id=#{addressNumbers}
+        </if>
+        order by default_address
+    </select>
+    <select id="selectBusinessId" resultType="java.lang.Integer">
+        select business_id businessId from goods_manage where id=#{goodsId}
+    </select>
+
+    <insert id="submitPaymentWay">
+        insert into payment_way,customer_comment values (#{paymentWay},#{customerComment}) where order_uuid=#{orderNumbers}
+    </insert>
+
+    <select id="singleOrder" resultType="com.alibaba.fastjson.JSONObject">
+        select a.created_time createdTime,a.order_status orderStatus,a.pictureUrl,
+        a.order_goods_name goodsName,a.order_goods_price goodsPrice,
+        a.order_goods_style goodsStyle,a.payment_way paymentWay,
+        a.order_purchase_numbers purchaseNumbers,a.subtotal,a.business_id businessId,
+        a.customer_address customerAddress,a.customer_phone_number customerPhoneNumber,
+        a.customer_name customerName,a.customer_comment customerComment,b.business_name businessName
+        from submit_order a left join business b
+        ON
+        a.business_id=b.user_id
+        where a.order_uuid=#{0}
+    </select>
+</mapper>

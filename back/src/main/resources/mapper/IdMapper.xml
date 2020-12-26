@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heeexy.example.dao.IdDao">
+    <select id="findId" resultType="java.lang.Integer">
+    SELECT
+    MAX(id)
+    FROM
+    sys_permission
+</select>
+    <select id="findcode" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        menu_code,
+        menu_name
+        FROM
+        sys_permission
+        WHERE
+        menu_code=#{menu_code}
+        OR
+        menu_name=#{menu_name};
+    </select>
+    <select id="InsertidDao" resultType="com.alibaba.fastjson.JSONObject">
+        INSERT
+        INTO
+        sys_permission
+        VALUES
+        (#{id1},#{menu_code},#{menu_name},#{pc1},"列表",1),
+        (#{id2},#{menu_code},#{menu_name},#{pc2},"新增",2),
+        (#{id3},#{menu_code},#{menu_name},#{pc3},"修改",2)
+    </select>
+</mapper>
