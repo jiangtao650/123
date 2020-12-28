@@ -38,19 +38,7 @@
         </el-form-item>
         <el-form>
           <el-button type="text" icon="plus" @click="showCreate">注册账号</el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" disabled></el-button>
-          <el-button type="text" @click="forgetPwd">忘记密码</el-button>
+          <el-button type="text" style="float:right" @click="forgetPwd">忘记密码</el-button>
         </el-form>
       </el-form>
     </div>
@@ -184,6 +172,51 @@
         <el-button v-if="dialogStatus==='create'" type="success" @click="createUser">注册</el-button>
       </div>
     </el-dialog>
+    <!-- 忘记密码弹框 -->
+    <el-dialog :title="textMap[dialog]" :visible.sync="dialogForgetVisible">
+      <el-form
+        class="changeForm"
+        :model="tempUser"
+        label-position="left"
+        label-width="80px"
+        style="width: 300px; margin-left:50px;"
+        size="mini"
+        :rules="passwordRules"
+        ref="tempUser"
+      >
+        <el-form-item label="邮箱号码" required v-if="dialog==='updatePassword'">
+          <el-input type="text" v-model="tempUser.email" placeholder="请输入您的邮箱号码"></el-input>
+          <el-button type="primary" @click="sendVerificationCode">发送验证码</el-button>
+        </el-form-item>
+        <el-form-item label="验证码" required v-if="dialog==='updatePassword'">
+          <el-input type="text" v-model="tempUser.verficationCode" placeholder="请输入您收到的验证码"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名" required v-if="dialog==='updatePassword'">
+          <el-input type="text" v-model="tempUser.username" placeholder="请输入您的用户名"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" v-if="dialog==='updatePassword'" >
+          <el-input type="password" v-model="tempUser.password" placeholder="请设置您的新密码"></el-input>
+          <i class="el-icon-success" v-if="changeFlag == 1"></i>
+          <i class="el-icon-error" v-else-if="changeFlag == 2"></i>
+        </el-form-item>
+
+        <el-form-item label="确认密码" v-if="dialog==='updatePassword'" >
+          <el-input
+            type="password"
+            v-model="tempUser.queryPassword"
+            v-if="dialog==='updatePassword'"
+            required
+            placeholder="请再次输入您的新密码"
+          ></el-input>
+          <i class="el-icon-success" v-if="changeAgainFlag==1" color="#67C23A"></i>
+          <i class="el-icon-error" v-else-if="changeAgainFlag==2" color="#F56C6C"></i>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogForgetVisible = false">取 消</el-button>
+        <el-button v-if="dialog==='updatePassword'" type="success" @click="changePassword">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -222,15 +255,19 @@ export default {
       },
       changeFlag: 0,
       changeAgainFlag: 0,
+      verfication: "",
       activeName: "first",
       loginForm: {
         username: "admin",
         password: "123456"
       },
+      dialog: "updatePassword",
       dialogStatus: "create",
       dialogFormVisible: false,
+      dialogForgetVisible: false,
       textMap: {
-        create: "注册账号"
+        create: "注册账号",
+        updatePassword: "忘记密码"
       },
       tempUser: {
         email: "",
@@ -246,7 +283,9 @@ export default {
         businessAddress: "",
         businessOpenTime: "",
         businessCloseTime: "",
-        businessBrief: ""
+        businessBrief: "",
+        email: "",
+        verficationCode: ""
       },
       loginRules: {
         username: [
@@ -255,6 +294,9 @@ export default {
         password: [{ required: true, trigger: "blur", message: "请输入密码" }]
       },
       passwordRules: {
+        verficationCode: [
+          { required: true, message: "请输入验证码", trigger: "blur" }
+        ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
@@ -333,31 +375,62 @@ export default {
         }
       });
     },
+    changePassword() {
+      if (this.verfication == this.tempUser.verficationCode) {
+        this.api({
+          url: "/person/updatePassword",
+          method: "post",
+          data: {
+            password: this.tempUser.password,
+            username: this.tempUser.username
+          }
+        }).then(data => {
+          this.$message({
+            type: "info",
+            message: data
+          });
+        });
+      } else {
+        this.$message({
+          type: "info",
+          message: "验证码有误，请重新输入！"
+        });
+      }
+    },
+    sendVerificationCode() {
+      if (this.tempUser.email == "") {
+        this.$message({
+          type: "danger",
+          message: "请输入您的邮箱号码！"
+        });
+      } else {
+        this.api({
+          url: "/person/sendMessage",
+          method: "get",
+          params: {
+            purpose: "忘记密码",
+            email: this.tempUser.email,
+            subject: "邮箱验证码"
+          }
+        }).then(data => {
+          this.verfication = data.code;
+          console.log("data=" + data);
+          console.log("data.code=" + data.code);
+          this.$message({
+            type: "success",
+            message: "验证码已发送至您的邮箱，请注意查收！"
+          });
+          this.dialogForgetVisible = true;
+        });
+      }
+    },
     forgetPwd() {
-      // this.$prompt('请输入邮箱', '提示', {
-      //     confirmButtonText: '发送验证码',
-      //     cancelButtonText: '取消',
-      //     inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-      //     inputErrorMessage: '邮箱格式不正确'
-      //   }).then(({ value }) => {
-      //     this.api({
-      //       url:"/person/sendMessage",
-      //       method:"get",
-      //       params:{purpose:"忘记密码",email:value,subject:"邮箱验证码"}
-      //     })
-      //     this.$message({
-      //       type: 'success',
-      //       message: '你的邮箱是: ' + value
-      //     });
-      //   }).catch(() => {
-      //     this.$message({
-      //       type: 'info',
-      //       message: '取消输入'
-      //     });
-      //   });
-      this.$message({
-        message: "忘了活该！"
-      });
+      this.tempUser.email = "";
+      this.tempUser.verficationCode = "";
+      this.tempUser.username = "";
+      this.tempUser.password = "";
+      this.tempUser.queryPassword = "";
+      this.dialogForgetVisible = true;
     },
     showCreate() {
       this.tempUser.username = "";
@@ -377,7 +450,6 @@ export default {
     },
     createUser() {
       //添加新用户
-      console.log(this.tempUser);
       this.api({
         url: "/register/insertNewPerson",
         method: "post",
@@ -385,7 +457,7 @@ export default {
       }).then(() => {
         this.dialogFormVisible = false;
         this.$message({
-          message: "注册成功！",
+          message: "恭喜您！注册成功！",
           type: "success"
         });
       });

@@ -12,6 +12,9 @@
     <update id="recharge" >
         update customer set customer_balance=#{customerBalance} where customer_id=#{userId}
     </update>
+    <update id="updatePassword">
+        update sys_user set password=#{password} where username=#{username}
+    </update>
 
     <select id="selectCustomerBalance" resultType="com.alibaba.fastjson.JSONObject">
         select customer_balance customerBalance from customer where customer_id=#{userId}

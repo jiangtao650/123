@@ -33,4 +33,8 @@ public class PersonController {
         JSONObject jsonObject=CommonUtil.request2Json(request);
         return personService.sendMessage(jsonObject);
     }
+    @PostMapping("/updatePassword")
+    public JSONObject updatePassword(@RequestBody JSONObject jsonObject){
+        return personService.updatePassword(jsonObject);
+    }
 }

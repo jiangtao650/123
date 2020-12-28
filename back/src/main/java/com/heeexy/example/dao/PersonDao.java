@@ -14,4 +14,6 @@ public interface PersonDao {
     JSONObject selectPassword(JSONObject jsonObject);
 
     List<JSONObject> selectOrderInformation(JSONObject jsonObject);
+
+    int updatePassword(JSONObject jsonObject);
 }

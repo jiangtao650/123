@@ -11,4 +11,6 @@ public interface PersonService {
     JSONObject selectPassword(JSONObject jsonObject);
 
     JSONObject sendMessage(JSONObject jsonObject);
+
+    JSONObject updatePassword(JSONObject jsonObject);
 }

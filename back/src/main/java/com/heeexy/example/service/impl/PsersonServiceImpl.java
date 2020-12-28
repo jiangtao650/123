@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.heeexy.example.dao.PersonDao;
 import com.heeexy.example.service.PersonService;
 import com.heeexy.example.util.CommonUtil;
+import com.heeexy.example.util.ThreadTimeout;
 import com.heeexy.example.util.constants.Constants;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -18,6 +19,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
+import javax.xml.crypto.Data;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +33,7 @@ public class PsersonServiceImpl implements PersonService {
     private PersonDao personDao;
     @Autowired
     private JavaMailSender javaMailSender;
+
     @Override
     public JSONObject personInformation(JSONObject jsonObject) {
         Session session = SecurityUtils.getSubject().getSession();
@@ -53,27 +57,29 @@ public class PsersonServiceImpl implements PersonService {
         Session session = SecurityUtils.getSubject().getSession();
         JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
         jsonObject.put("userId", userInfo.get("userId"));
-        JSONObject jsonObject1=personDao.selectPassword(jsonObject);
+        JSONObject jsonObject1 = personDao.selectPassword(jsonObject);
         return CommonUtil.successJson(jsonObject1);
     }
 
     @Override
     public JSONObject sendMessage(JSONObject jsonObject) {
-        Session session = SecurityUtils.getSubject().getSession();
-        JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
-        jsonObject.put("userId", userInfo.get("userId"));
-        String email=null;
-        String mail=null;
-        if (jsonObject.getString("subject")=="邮箱验证码") {
+        JSONObject jsonObject2 = new JSONObject();
+        String email = null;
+        String mail = null;
+        if (jsonObject.getString("subject").equals("邮箱验证码") ) {
             //生成六位随机数
             Random random = new Random();
             String code = "";
             for (int i = 0; i < 6; i++) {
                 code += random.nextInt(10);
             }
-            email=jsonObject.getString("email");
-            mail="【MaetS Games】您的验证码是"+code+"10分钟内有效，请勿泄露！";
-        }else {
+            email = jsonObject.getString("email");
+            mail = "【MaetS Games】您的验证码是：" + code + ",该验证码10分钟内有效，请勿泄露！";
+            jsonObject2.put("code", code);
+        } else {
+            Session session = SecurityUtils.getSubject().getSession();
+            JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
+            jsonObject.put("userId", userInfo.get("userId"));
             Random random1 = new Random();
             String code1 = "";
             for (int i = 0; i < 11; i++) {
@@ -109,18 +115,35 @@ public class PsersonServiceImpl implements PersonService {
         //发送的标题
         mailMessage.setSubject(jsonObject.getString("subject"));
         //发送的内容
-        System.out.println(jsonObject);
+
         mailMessage.setText(mail);
-        JSONObject jsonObject2=new JSONObject();
+
         try {
-            javaMailSender.send(mailMessage);
-            System.out.println("发送成功！");
-            jsonObject2.put("sendMessage",jsonObject.getString("subject")+"已发送至您的邮箱，请注意查收！");
+            /*异步调用多线程*/
+            ThreadTimeout threadTimeout=new ThreadTimeout();
+            threadTimeout.setJavaMailSender(javaMailSender);
+            threadTimeout.setSimpleMailMessage(mailMessage);
+            threadTimeout.start();
+
+            System.out.println("发送成功！"+new Date().getTime());
+            jsonObject2.put("sendMessage", jsonObject.getString("subject") + "已发送至您的邮箱，请注意查收！");
         } catch (Exception e) {
             System.out.println("发送失败");
             jsonObject2.put("sendMessage", jsonObject.getString("subject") + "发送失败！");
         }
         return CommonUtil.successJson(jsonObject2);
+    }
+
+    @Override
+    public JSONObject updatePassword(JSONObject jsonObject) {
+        String content = null;
+        int row = personDao.updatePassword(jsonObject);
+        if (row == 0) {
+            content = "该用户名不存在，请注册该用户名！";
+        } else {
+            content = "恭喜您，密码修改成功！";
+        }
+        return CommonUtil.successJson(content);
     }
 
 }

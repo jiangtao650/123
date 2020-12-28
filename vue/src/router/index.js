@@ -55,7 +55,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/business/businessInformation',
     name: '商家模块',
-    meta: { title: '商家模块', icon: 'tree' },
+    meta: { title: '商家模块', icon: 'store-fill' },
     children: [
       {
         path: 'businessInformation',
@@ -68,16 +68,23 @@ export const asyncRouterMap = [
         path: 'commodityInformation',
         name: '商品信息管理',
         component: _import('business/commodityInformation'),
-        meta: { title: '商品信息管理', icon: 'example' },
+        meta: { title: '商品信息管理', icon: 'company-fill' },
         menu: 'commodityInformation'
       },
       {
         path: 'categoryInformation',
         name: '商品分类管理',
         component: _import('business/categoryInformation'),
-        meta: { title: '商品分类管理', icon: 'example' },
+        meta: { title: '商品分类管理', icon: 'set' },
         menu: 'categoryInformation'
       },
+      {
+        path: 'orderTemplate',
+        name: '订单模板',
+        component: _import('business/orderTemplate'),
+        meta: { title: '订单模板', icon: 'example' },
+        menu: 'orderTemplate'
+      }
     ]
   },
   {
@@ -115,20 +122,20 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/person/personInformation',
     name: '个人模块',
-    meta: { title: '个人模块', icon: 'table' },
+    meta: { title: '个人模块', icon: 'office-supplies' },
     children: [
       {
         path: 'personInformation',
         name: '个人信息',
         component: _import('person/personInformation'),
-        meta: { title: '个人信息', icon: 'user' },
+        meta: { title: '个人信息', icon: 'atm-fill' },
         menu: 'personInformation'
       },
       {
         path: 'myWallet',
         name: '我的钱包',
         component: _import('person/myWallet'),
-        meta: { title: '我的钱包', icon: 'password' },
+        meta: { title: '我的钱包', icon: 'discounts-fill' },
         menu: 'myWallet'
       },
     ]
@@ -138,20 +145,20 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/supermarket/supermarket',
     name: '购物商城',
-    meta: { title: '购物商城', icon: 'table' },
+    meta: { title: '购物商城', icon: 'all' },
     children: [
       {
         path: 'supermarket',
         name: 'maetS商城',
         component: _import('supermarket/supermarket'),
-        meta: { title: 'maetS商城', icon: 'user' },
+        meta: { title: 'maetS商城', icon: 'libra' },
         menu: 'supermarket'
       },
       {
         path: 'shoppingCart',
         name: "购物车",
         component: _import('supermarket/shoppingCart'),
-        meta: { title: '购物车', icon: 'user' },
+        meta: { title: '购物车', icon: 'cart-Empty' },
         menu: 'shoppingCart'
       },
       {
