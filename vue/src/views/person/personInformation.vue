@@ -1,144 +1,101 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div>
-        <span
-          style="font-size:50px;text-align:center;display:block;margin-top:50px;font-weight:bold;"
-        >Thank You！</span>
-      </div>
-      <div>
-        <span
-          style="font-size:20px;text-align:center;display:block;margin-top:50px;font-weight:bold"
-        >尊敬的{{singleOrder.customerName}}：</span>
-      </div>
-      <div>
-        <span
-          style="font-size:15px;text-align:center;display:block;margin-top:10px"
-        >感谢您对MaetS Games商城的光顾！</span>
-      </div>
-      <div>
-        <span
-          style="font-size:30px;text-align:center;display:block;margin-top:30px;font-weight:bold"
-        >发票ID：</span>
-      </div>
-      <div>
-        <span
-          style="font-size:15px;text-align:center;display:block;margin-top:10px;color:#B2B2B2;"
-        >(请保留本收据，以备后用。)</span>
-      </div>
-    </div>
-    <div style="width:600px;margin-top:100px;text-align:center;display:block;margin:auto;">
-      <div>
-        <span
-          style="color:#B2B2B2;font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold"
-        >您的订单信息：</span>
-      </div>
-      <el-divider></el-divider>
-      <table>
+      <!-- <div class="background">
+        <img :src="imgSrc" width="100%" height="100%" alt />
+      </div> -->
+      <el-form :inline="true">
+        <el-form-item>
+          <router-link :to="{name:'修改信息'}">
+            <el-button type="primary" icon="plus">修改信息</el-button>
+          </router-link>
+        </el-form-item>
+      </el-form>
+      <table style="margin-left:100px;margin-top:20px">
         <tr>
           <td>
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold;width:300px"
-            >订单ID：</span>
-            <br />
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:30px;"
-            >{{singleOrder.orderNumbers}}</span>
+            <el-image style="width: 300px; height: 300px" :src="personInformation.headPortrait"></el-image>
           </td>
           <td>
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:30px;font-weight:bold"
-            >账单地址：</span>
-            <br />
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:30px;"
-            >{{singleOrder.customerEmail}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold"
-            >订购日期：</span>
-            <br />
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:15px;"
-            >{{singleOrder.createdTime}}</span>
-          </td>
-          <td>
-            <span
-              style="font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold"
-            >来源：</span>
-            <br />
-            <span style="font-size:15px;text-align:left;display:block;margin-top:5px;">maetS Store</span>
+            <table>
+              <tr>
+                <td>
+                  <span
+                    style="margin-bottom:20px;margin-bottom:30px;margin-top:200px;margin-left:50px;font-size:20px;font-weight:blod"
+                  >{{personInformation.customerName}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <el-image style="width: 150px; height: 150px" :src="personInformation.pictureOne"></el-image>
+                </td>
+                <td>
+                  <el-image style="width: 150px; height: 150px" :src="personInformation.pictureTwo"></el-image>
+                </td>
+                <td>
+                  <el-image
+                    style="width: 150px; height: 150px"
+                    :src="personInformation.pictureThree"
+                  ></el-image>
+                </td>
+                <td>
+                  <el-image
+                    style="width: 150px; height: 150px"
+                    :src="personInformation.pictureFour"
+                  ></el-image>
+                </td>
+                <td>
+                  <el-image
+                    style="width: 150px; height: 150px"
+                    :src="personInformation.pictureFive"
+                  ></el-image>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       </table>
-      <div style="width:600px;margin-top:100px;text-align:center;display:block;margin:auto;">
-        <div>
-          <span
-            style="color:#B2B2B2;font-size:15px;text-align:left;display:block;margin-top:15px;font-weight:bold"
-          >以下是您订购的物品：</span>
-        </div>
-        <el-divider></el-divider>
-        <el-table
-          highlight-current-row
-          :data="list"
-          fit
-          v-loading.body="listLoading"
-          element-loading-text="拼命加载中"
-          style="width: 100%"
-        >
-          <el-table-column
-            align="center"
-            prop="pictureUrl"
-            label="商品"
-            style="width:120px;height:150"
-          >
-            <template slot-scope="scope">
-              <img :src="scope.row.pictureUrl" width="100px" height="150px" />
-            </template>
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="goodsName"
-            label="名称"
-            style="width:120px;height:150"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            prop="purchaseNumbers"
-            label="数量"
-            style="width:120px;height:150"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            prop="goodsPrice"
-            label="单价"
-            style="width:120px;height:150"
-          ></el-table-column>
-          <el-table-column align="center" prop="subtotal" label="小计" style="width:120px;height:150"></el-table-column>
-        </el-table>
-        <div style="width:600px;margin-top:20px;text-align:right;display:block;">
-          总计：￥
-          <span>{{totalPrice}}</span>
-        </div>
-        <el-divider></el-divider>
-        <div>
-          <span
-            style="width:600px;text-align:center;display:block;font-size:10px;"
-          >所有在MaetS Games商城购买的游戏都可以在购买后的14天内退款（预购游戏则可在发售后14天内退款），但前提是游戏时间不得超过2小时。</span>
-        </div>
-        <el-divider></el-divider>
-        <div>
-          <span
-            style="width:600px;text-align:center;display:block;font-size:10px;font-weight:bold"
-          >MaetS Games 科技有限公司</span>
-          <span
-            style="width:600px;text-align:center;display:block;font-size:10px;"
-          >广东省东莞市东城区东平街君豪商业中心20层达内教育CGB2008班</span>
-        </div>
-      </div>
+      <table style="margin-left:100px;margin-top:20px">
+        <tr>
+          <td style="margin-top:50px;width:500px">
+            <span
+              style="margin-top:50px;float:left;font-size:15px;font-weight:blod"
+            >用户昵称：{{personInformation.customerName}}</span>
+            <br />
+          </td>
+          <td style="margin-top:15px">
+            <span style="margin-top:50px;float:left;font-size:15px;font-weight:blod">
+              性别：
+              <el-tag v-if="personInformation.gender==1">男</el-tag>
+              <el-tag v-if="personInformation.gender==2" type="danger">女</el-tag>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td style="margin-top:15px">
+            <span
+              style="margin-top:50px;float:left;font-size:15px;font-weight:blod"
+            >联系方式：{{personInformation.customerPhoneNumber}}</span>
+          </td>
+          <td style="margin-top:15px">
+            <span
+              style="margin-top:50px;float:left;font-size:15px;font-weight:blod"
+            >出生日期：{{personInformation.birthday}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="margin-top:15px">
+            <span
+              style="margin-top:50px;float:left;font-size:15px;font-weight:blod"
+            >位置：{{personInformation.location}}</span>
+          </td>
+          <td style="margin-top:15px">
+            <span
+              style="margin-top:50px;float:left;font-size:15px;font-weight:blod"
+            >公司：{{personInformation.company}}</span>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 </template>
@@ -146,26 +103,27 @@
 export default {
   data() {
     return {
-      list: [], //表格的数据
+      imgSrc: require("../../assets/1.jpg"),
+      dialogVisible: false,
+      disabled: false,
+      dialogImageUrl: "",
       listLoading: false, //数据加载等待动画
       isIndeterminate: false,
-      singleOrder: {
-        goodsId: "",
-        goodsName: "",
-        goodsPrice: "",
-        goodsSaleStatus: "",
-        pictureUrl: "",
-        goodsStyle: "",
-        purchaseNumbers: "",
-        subTotal: "",
+      personInformation: {
         customerName: "",
         customerPhoneNumber: "",
-        customerAddress: "",
-        createdTime: "",
-        totalPrice: "",
-        paymentWay: "",
-        customerComment: "",
-        businessName: ""
+        customerId: "",
+        email: "",
+        headPortrait: "",
+        gender: "",
+        birthday: "",
+        location: "",
+        company: "",
+        pictureOne: "",
+        pictureTwo: "",
+        pictureThree: "",
+        pictureFour: "",
+        pictureFive: ""
       }
     };
   },
@@ -175,24 +133,66 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      this.orderNumbers = this.$route.query.orderNumbers;
-      this.singleOrder.totalPrice = this.$route.query.totalPrice;
       this.api({
-        url: "/orderManage/singleOrder",
-        method: "get",
-        params: this.orderNumbers
+        url: "/person/selectPersonInformation",
+        method: "get"
       }).then(data => {
+        console.log(data);
         this.listLoading = false;
-        this.list = data;
-        this.singleOrder.createdTime = data[0].createdTime;
-        this.singleOrder.customerName = data[0].customerName;
-        this.singleOrder.paymentWay = data[0].paymentWay;
-        var price=0;
-        for(var i=o;i<data[0].length;i++){
-          
-        }
+        this.personInformation = data;
       });
+    },
+    handleAvatarSuccess(param) {
+      console.log(param);
+      this.imageUrl = param.info.pictureUrl;
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
     }
   }
 };
 </script>
+<style>
+.background {
+  width: 100%;
+  height: 100%; /**宽高100%是为了图片铺满屏幕 */
+  z-index: -1;
+  position: absolute;
+}
+.filter-container {
+  z-index: 1;
+  position: absolute;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden; 
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 250px;
+  height: 250px;
+  line-height: 250px;
+  text-align: center;
+}
+.avatar {
+  width: 250px;
+  height: 250px;
+  display: block;
+}
+</style>

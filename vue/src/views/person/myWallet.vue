@@ -34,7 +34,6 @@
           <el-button type="danger" @click="popUp" round>确认</el-button>
         </div>
       </el-form-item>
-      <el-form-item></el-form-item>
     </el-form>
     <el-form>
       <el-form-item>
@@ -151,14 +150,20 @@ export default {
     },
     recharge() {
       this.listLoading = true;
-      console.log("this.myWallet.customerBalance="+this.myWallet.customerBalance)
-      console.log("this.myWallet.rechargeCustomerBalance="+this.myWallet.rechargeCustomerBalance)
+      console.log(
+        "this.myWallet.customerBalance=" + this.myWallet.customerBalance
+      );
+      console.log(
+        "this.myWallet.rechargeCustomerBalance=" +
+          this.myWallet.rechargeCustomerBalance
+      );
       this.api({
         //recharge充值的意思
         url: "/person/recharge",
         method: "post",
         data: {
-          customerBalance: this.myWallet.rechargeCustomerBalance + this.originalMyWallet
+          customerBalance:
+            this.myWallet.rechargeCustomerBalance + this.originalMyWallet
         }
       }).then(result => {
         this.listLoading = false;
@@ -176,7 +181,7 @@ export default {
         this.myWallet.nickname = data["nickName"];
         this.myWallet.customerBalance = data["customerBalance"];
         this.originalMyWallet = data["customerBalance"];
-        console.log("this.originalMyWallet="+this.originalMyWallet)
+        console.log("this.originalMyWallet=" + this.originalMyWallet);
       });
     },
     changeList(id) {

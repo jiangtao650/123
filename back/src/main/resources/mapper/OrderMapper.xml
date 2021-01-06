@@ -13,14 +13,20 @@
 
     <insert id="createOrder">
         insert into
-        submit_order(delete_status,order_uuid,order_status,pictureUrl,order_goods_name,
-        order_goods_price,order_goods_style,payment_way,order_purchase_numbers,subtotal,
-        refund_order_status,business_id,customer_address,customer_phone_number,
-        customer_name,customer_comment,total_price)
+        submit_order(delete_status,order_uuid,pictureUrl,order_goods_name,
+        order_goods_price,order_goods_style,order_purchase_numbers,subtotal,
+        business_id,customer_comment,customer_id)
         values
-        (1,#{orderNumbers},1,#{pictureUrl},#{goodsName},#{goodsPrice},#{goodsStyle},
-        #{paymentWay},#{purchaseNumbers},#{subtotal},0,#{businessId},
-        #{customerAddress},#{customerPhoneNumber},#{customerName},#{customerComment},#{totalPrice})
+        (1,#{orderNumbers},#{pictureUrl},#{goodsName},#{goodsPrice},#{goodsStyle},
+        #{purchaseNumbers},#{subtotal},#{businessId},#{customerComment},#{customerId})
+    </insert>
+    <insert id="createOrderList">
+        insert into
+        order_list(delete_status,order_uuid,order_status,payment_way,refund_order_status,business_id,
+        customer_address,customer_phone_number,customer_name,total_price,customer_id)
+        values
+        (1,#{orderNumbers},1,#{paymentWay},0,#{businessId},#{customerAddress},
+        #{customerPhoneNumber},#{customerName},#{totalPrice},#{customerId})
     </insert>
 
     <select id="selectCustomerInformation" resultType="com.alibaba.fastjson.JSONObject">
@@ -32,7 +38,7 @@
         </if>
         order by default_address
     </select>
-    <select id="selectBusinessId" resultType="java.lang.Integer">
+    <select id="selectBusinessId" resultType="java.lang.String">
         select business_id businessId from goods_manage where id=#{goodsId}
     </select>
 
@@ -41,15 +47,44 @@
     </insert>
 
     <select id="singleOrder" resultType="com.alibaba.fastjson.JSONObject">
-        select a.created_time createdTime,a.order_status orderStatus,a.pictureUrl,
-        a.order_goods_name goodsName,a.order_goods_price goodsPrice,
-        a.order_goods_style goodsStyle,a.payment_way paymentWay,
-        a.order_purchase_numbers purchaseNumbers,a.subtotal,a.business_id businessId,
-        a.customer_address customerAddress,a.customer_phone_number customerPhoneNumber,
-        a.customer_name customerName,a.customer_comment customerComment,b.business_name businessName
-        from submit_order a left join business b
+        select
+        date_format(a.created_time, '%Y-%m-%d %H:%i:%s') createdTime,
+        b.order_status orderStatus,
+        a.pictureUrl,
+        a.order_goods_name goodsName,
+        a.order_goods_price goodsPrice,
+        a.order_goods_style goodsStyle,
+        b.payment_way paymentWay,
+        a.customer_id customerId,
+        a.order_purchase_numbers purchaseNumbers,
+        a.subtotal,
+        a.business_id businessId,
+        b.customer_address customerAddress,
+        b.customer_phone_number customerPhoneNumber,
+        b.customer_name customerName,
+        a.customer_comment customerComment,
+        b.customer_id customerId,
+        b.total_price totalPrice
+        from submit_order a left join order_list b
         ON
-        a.business_id=b.user_id
-        where a.order_uuid=#{0}
+        a.order_uuid=b.order_uuid
+        where
+        a.order_uuid=#{0} and delete_status=1
+    </select>
+    <select id="orderCount" resultType="java.lang.Integer">
+        select count(*) from order_list where business_id=#{userId} and delete_status=1 order by created_time LIMIT #{offSet}, #{pageRow}
+    </select>
+    <select id="orderList" resultType="com.alibaba.fastjson.JSONObject">
+        select
+        date_format(created_time, '%Y-%m-%d %H:%i:%s') createdTime,order_uuid orderUuid,order_status orderStatus,
+        payment_way paymentWay,refund_order_status refundOrderStatus,customer_name customerName,
+        business_id businessId,customer_address customerAddress,customer_phone_number customerPhoneNumber,
+        total_price totalPrice
+        from order_list
+        where business_id=#{userId} and delete_status=1
+        order by created_time desc
+    </select>
+    <select id="orderSelectBusinessId" resultType="java.lang.String">
+        select business_id businessId from order_list where delete_status=1 and order_uuid=#{orderNumbers}
     </select>
 </mapper>

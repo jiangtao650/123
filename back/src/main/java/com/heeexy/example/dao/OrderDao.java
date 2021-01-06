@@ -13,7 +13,15 @@ public interface OrderDao {
 
     int submitPaymentWay(JSONObject jsonObject);
 
-    Object selectBusinessId(Object object);
+    String selectBusinessId(Object object);
 
     List<JSONObject> singleOrder(JSONObject jsonObject);
+
+    int orderCount(JSONObject jsonObject);
+
+    List<JSONObject> orderList(JSONObject jsonObject);
+
+    void createOrderList(JSONObject orderList);
+
+    String orderSelectBusinessId(JSONObject jsonObject);
 }

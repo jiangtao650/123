@@ -33,6 +33,7 @@ public class RegisterServiceImpl implements RegisterService {
             }
             System.out.println(newPerson);
             registerDao.insertCustomer(newPerson);
+            registerDao.createPersonInformation(newPerson);
         }else if(roleId==6){
             String[] businessForm ={"businessName","businessPhone","businessAddress","businessOpenTime","businessCloseTime","businessBrief"};
             for(int i=0;i<businessForm.length;i++){

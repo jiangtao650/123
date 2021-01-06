@@ -11,4 +11,8 @@ public interface OrderService {
     JSONObject submitPaymentWay(JSONObject jsonObject);
 
     JSONObject singleOrder(JSONObject jsonObject);
+
+    JSONObject orderManage(JSONObject jsonObject);
+
+    JSONObject sendMessageToBusiness(JSONObject jsonObject);
 }

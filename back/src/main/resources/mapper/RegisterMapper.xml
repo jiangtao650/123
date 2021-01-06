@@ -19,6 +19,9 @@
         insert into business(business_name,business_phone,business_address,business_open_time,business_close_time,business_brief,user_id,delete_status)
         values (#{businessName},#{businessPhone},#{businessAddress},#{businessOpenTime},#{businessCloseTime},#{businessBrief},#{newPersonId},1)
     </insert>
+    <insert id="createPersonInformation">
+        insert into person_information(person_id,delete_status) values (#{userId},1)
+    </insert>
     <select id="queryExistUsername" resultType="java.lang.Integer">
         select count(0)
          from sys_user

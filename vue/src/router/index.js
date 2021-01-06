@@ -79,11 +79,26 @@ export const asyncRouterMap = [
         menu: 'categoryInformation'
       },
       {
+        path: 'orderManage',
+        name: '订单管理',
+        component: _import('business/orderManage'),
+        meta: { title: '订单管理', icon: 'integral-fill' },
+        menu: 'orderManage',
+      },
+      {
         path: 'orderTemplate',
         name: '订单模板',
         component: _import('business/orderTemplate'),
         meta: { title: '订单模板', icon: 'example' },
-        menu: 'orderTemplate'
+        menu: 'orderTemplate',
+      },
+      {
+        path: 'orderDetails',
+        name: '订单详情',
+        component: _import('business/orderDetails'),
+        meta: { title: '订单详情', icon: 'example' },
+        menu: 'orderDetails',
+        hidden: true
       }
     ]
   },
@@ -138,6 +153,14 @@ export const asyncRouterMap = [
         meta: { title: '我的钱包', icon: 'discounts-fill' },
         menu: 'myWallet'
       },
+      {
+        path: 'updateInformation',
+        name: '修改信息',
+        component: _import('person/updateInformation'),
+        meta: { title: '修改信息', icon: 'discounts-fill' },
+        menu: 'updateInformation',
+        hidden: true
+      }
     ]
   },
   {

@@ -16,4 +16,14 @@ public interface PersonDao {
     List<JSONObject> selectOrderInformation(JSONObject jsonObject);
 
     int updatePassword(JSONObject jsonObject);
+
+    void insertInformation(JSONObject jsonObject);
+
+    int selectPersonId(JSONObject jsonObject);
+
+    void updateInformation(JSONObject jsonObject);
+
+    JSONObject selectPeronInformation(JSONObject jsonObject);
+
+    void updateCustomerName(JSONObject jsonObject);
 }

@@ -8,18 +8,14 @@ import com.heeexy.example.util.ThreadTimeout;
 import com.heeexy.example.util.constants.Constants;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -66,7 +62,7 @@ public class PsersonServiceImpl implements PersonService {
         JSONObject jsonObject2 = new JSONObject();
         String email = null;
         String mail = null;
-        if (jsonObject.getString("subject").equals("邮箱验证码") ) {
+        if (jsonObject.getString("subject").equals("邮箱验证码")) {
             //生成六位随机数
             Random random = new Random();
             String code = "";
@@ -120,12 +116,12 @@ public class PsersonServiceImpl implements PersonService {
 
         try {
             /*异步调用多线程*/
-            ThreadTimeout threadTimeout=new ThreadTimeout();
+            ThreadTimeout threadTimeout = new ThreadTimeout();
             threadTimeout.setJavaMailSender(javaMailSender);
             threadTimeout.setSimpleMailMessage(mailMessage);
             threadTimeout.start();
 
-            System.out.println("发送成功！"+new Date().getTime());
+            System.out.println("发送成功！" + new Date().getTime());
             jsonObject2.put("sendMessage", jsonObject.getString("subject") + "已发送至您的邮箱，请注意查收！");
         } catch (Exception e) {
             System.out.println("发送失败");
@@ -146,4 +142,23 @@ public class PsersonServiceImpl implements PersonService {
         return CommonUtil.successJson(content);
     }
 
+    @Override
+    public JSONObject updateInformation(JSONObject jsonObject) {
+        Session session = SecurityUtils.getSubject().getSession();
+        JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
+        jsonObject.put("userId", userInfo.get("userId"));
+       jsonObject.put("birthday",jsonObject.getSqlDate("birthday"));
+        personDao.updateInformation(jsonObject);
+        personDao.updateCustomerName(jsonObject);
+        return CommonUtil.successJson();
+    }
+
+    @Override
+    public JSONObject selectPersonInformation(JSONObject jsonObject) {
+        Session session = SecurityUtils.getSubject().getSession();
+        JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
+        jsonObject.put("userId", userInfo.get("userId"));
+        JSONObject jsonObject1 = personDao.selectPeronInformation(jsonObject);
+        return CommonUtil.successJson(jsonObject1);
+    }
 }

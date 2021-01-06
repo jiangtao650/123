@@ -3,17 +3,34 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.heeexy.example.dao.PersonDao">
+    <insert id="insertInformation">
+        insert into
+        person_information(delete_status,person_id,head_portrait,gender,birthday,location,
+        company,picture_one,picture_two,picture_three,picture_four,picture_five)
+        values
+        (1,#{userId},#{headPortrait},#{gender},#{birthday},#{location},#{company},
+        #{pictureOne},#{pictureTwo},#{pictureThree},#{pictureFour},#{pictureFive})
+    </insert>
     <select id="personInformation" resultType="com.alibaba.fastjson.JSONObject">
         select customer_name nickName,customer_phone_number customerPhoneName,customer_balance customerBalance,
         email
         from customer where customer_id=#{userId}
     </select>
 
-    <update id="recharge" >
+    <update id="recharge">
         update customer set customer_balance=#{customerBalance} where customer_id=#{userId}
     </update>
     <update id="updatePassword">
         update sys_user set password=#{password} where username=#{username}
+    </update>
+    <update id="updateInformation">
+        update person_information set
+        head_portrait=#{headPortrait},gender=#{gender},birthday=#{birthday},location=#{location},company=#{company},picture_one=#{pictureOne},
+        picture_two=#{pictureTwo},picture_three=#{pictureThree},picture_four=#{pictureFour},picture_five=#{pictureFive}
+        where person_id=#{userId}
+    </update>
+    <update id="updateCustomerName">
+        update customer set customer_name=#{customerName},customer_phone_number=#{customerPhoneNumber} where customer_id=#{userId}
     </update>
 
     <select id="selectCustomerBalance" resultType="com.alibaba.fastjson.JSONObject">
@@ -23,10 +40,25 @@
         select password from sys_user where id=#{userId}
     </select>
     <select id="selectOrderInformation" resultType="com.alibaba.fastjson.JSONObject">
-        select customer_address customerAddress,created_time createdTime,pictureUrl,order_goods_name orderGoodsName,
-        order_purchase_numbers orderPurchaseNumbers,order_goods_price orderGoodsPrice,subtotal,total_price totalPrice,
-        customer_name customerName
-        from submit_order
-        where order_uuid=#{orderNumbers}
+        select b.customer_address customerAddress,a.created_time createdTime,a.pictureUrl,a.order_goods_name orderGoodsName,
+        a.order_purchase_numbers orderPurchaseNumbers,a.order_goods_price orderGoodsPrice,a.subtotal,b.total_price totalPrice,
+        b.customer_name customerName
+        from submit_order a left join order_list b
+        ON
+        a.order_uuid=b.order_uuid
+        where a.order_uuid=#{orderNumbers}
+    </select>
+    <select id="selectPersonId" resultType="java.lang.Integer">
+        select person_id personId from person_information where person_id=#{personId}
+    </select>
+    <select id="selectPeronInformation" resultType="com.alibaba.fastjson.JSONObject">
+        select
+        a.head_portrait headPortrait,a.gender,a.birthday,a.location,a.company,a.picture_one pictureOne,b.customer_name customerName,
+        a.picture_two pictureTwo,a.picture_three pictureThree,a.picture_four pictureFour,a.picture_five pictureFive,b.customer_phone_number customerPhoneNumber
+        FROM
+        person_information a left join customer b
+        ON
+        a.person_id=b.customer_id
+        where a.person_id=#{userId}
     </select>
 </mapper>

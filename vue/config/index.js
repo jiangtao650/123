@@ -1,5 +1,21 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 var path = require('path')
+module.exports={
+  devServer: {
+  //设置完成后重启npm
+       proxy: {
+         //设置代理
+           "/devapi": {
+               target: "ws://localhost:8080", // 接口的域名
+               changeOrigin: true,
+               ws:true,
+               pathRewrite: {
+                   "^/devapi": ""	//通配符
+               }
+           }
+       },
+   },
+}
 module.exports = {
   build: {
     env: require('./prod.env'),
@@ -34,7 +50,7 @@ module.exports = {
         pathRewrite: {
           '^/api': '/'
         }
-      }
+      },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
@@ -42,5 +58,6 @@ module.exports = {
     // In our experience, they generally work as expected,
     // just be aware of this issue when enabling this option.
     cssSourceMap: false
-  }
+  },
+
 }

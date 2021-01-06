@@ -26,8 +26,10 @@
         >支付金额：￥{{this.package.totalPrice}}</span>
       </el-form-item>
       <el-form-item style="text-align: center;display:block;margin:100px;">
-        <router-link :to="{name:'查看订单',query:{orderNumbers:this.package.orderNumbers,totalPrice:this.package.totalPrice}}">
-          <el-button type="primary" icon="plus" >查看订单</el-button>
+        <router-link
+          :to="{name:'查看订单',query:{orderNumbers:this.package.orderNumbers,totalPrice:this.package.totalPrice}}"
+        >
+          <el-button type="primary" icon="plus">查看订单</el-button>
         </router-link>
         <router-link :to="{name:'maetS商城'}">
           <el-button type="primary" icon="plus">浏览商城</el-button>
@@ -55,6 +57,13 @@ export default {
     getList() {
       this.package.orderNumbers = this.$route.query.orderNumbers;
       this.package.totalPrice = this.$route.query.totalPrice;
+      this.api({
+        url: "/orderManage/sendMessageToBusiness",
+        methods: "get",
+        params: { orderNumbers: this.package.orderNumbers }
+      }).then(data => {
+        this.listLoading = false;
+      });
     }
   }
 };

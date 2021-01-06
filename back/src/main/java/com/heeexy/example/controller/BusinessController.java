@@ -118,7 +118,6 @@ public class BusinessController {
 
         //二.如果是图片  高度/宽度
         //2.1将数据转化为图片对象
-        OutputStream fouts = null;
         String uuidName = null;
         try {
             BufferedImage bufferedImage =
@@ -151,33 +150,11 @@ public class BusinessController {
             /*判断是否需要压缩*/
             File realFile = new File(fileDirPath + uuidName);
             file.transferTo(realFile);
-//            if (width >= 1000 && height >= 1500) {
-//                /* 建立传输通道，文件输出流，最后以流的形式把文件内容传输过去*/
-//                fouts = new FileOutputStream(fileDirPath + uuidName);
-//                /* 绘制新图使用image.SCALE_SMOOTH算法，压缩后的图片质量相对光滑没有
-//                 * 明显的锯齿，又叫图片光滑压缩算法*/
-//                Image image = bufferedImage.getScaledInstance(1000, 1500, Image.SCALE_SMOOTH);
-//                BufferedImage bufferedImage1 = new BufferedImage(1000, 1500, BufferedImage.TYPE_INT_RGB);
-//                Graphics g = bufferedImage1.getGraphics();
-//                g.setColor(Color.RED);
-//                /*绘制处理后的图*/
-//                g.drawImage(image, 0, 0, null);
-//                g.dispose();
-//                ImageIO.write(bufferedImage1, fileType, fouts);
-//                System.out.println("压缩完毕！");
-//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-//            if (fouts != null) {
-//                try {
-//                    fouts.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
         }
         //本地磁盘地址:       E:\images\2020\12\02\a.jpg
         //网络访问虚拟地址:   http://image.jt.com\2020\12\02\a.jpg

@@ -32,4 +32,14 @@ public class OrderController {
         JSONObject jsonObject=CommonUtil.request2Json(request);
         return orderService.singleOrder(jsonObject);
     }
+    @GetMapping("/orderManage")
+    public JSONObject orderManage(HttpServletRequest request){
+        JSONObject jsonObject=CommonUtil.request2Json(request);
+        return orderService.orderManage(jsonObject);
+    }
+    @GetMapping("/sendMessageToBusiness")
+    public JSONObject sendMessageToBusiness(HttpServletRequest request){
+        JSONObject jsonObject=CommonUtil.request2Json(request);
+        return orderService.sendMessageToBusiness(jsonObject);
+    }
 }

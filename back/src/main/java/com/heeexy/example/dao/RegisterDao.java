@@ -12,4 +12,6 @@ public interface RegisterDao {
     void insertCustomer(JSONObject jsonObject);
 
     void insertBusiness(JSONObject newPerson);
+
+    void createPersonInformation(JSONObject newPerson);
 }
