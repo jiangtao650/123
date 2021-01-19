@@ -1,6 +1,9 @@
 <template>
   <div>
     <div class="login-container">
+      <div class="background">
+        <img :src="imgSrc" width="100%" height="100%" alt />
+      </div>
       <el-form
         autocomplete="on"
         :model="loginForm"
@@ -10,7 +13,7 @@
         label-width="0px"
         class="card-box login-form"
       >
-        <h3 class="title">后台管理系统</h3>
+        <h3 class="title">MaetS Games商城</h3>
         <el-form-item prop="username">
           <span class="svg-container svg-container_login">
             <svg-icon icon-class="user" />
@@ -194,13 +197,13 @@
         <el-form-item label="用户名" required v-if="dialog==='updatePassword'">
           <el-input type="text" v-model="tempUser.username" placeholder="请输入您的用户名"></el-input>
         </el-form-item>
-        <el-form-item label="新密码" v-if="dialog==='updatePassword'" >
+        <el-form-item label="新密码" v-if="dialog==='updatePassword'">
           <el-input type="password" v-model="tempUser.password" placeholder="请设置您的新密码"></el-input>
           <i class="el-icon-success" v-if="changeFlag == 1"></i>
           <i class="el-icon-error" v-else-if="changeFlag == 2"></i>
         </el-form-item>
 
-        <el-form-item label="确认密码" v-if="dialog==='updatePassword'" >
+        <el-form-item label="确认密码" v-if="dialog==='updatePassword'">
           <el-input
             type="password"
             v-model="tempUser.queryPassword"
@@ -220,6 +223,7 @@
   </div>
 </template>
 <script>
+const audioUrl = require("../../assets/mp3/audio.mp3");
 export default {
   name: "login",
   data() {
@@ -249,10 +253,12 @@ export default {
       }
     };
     return {
+      imgSrc: require("../../assets/2.jpg"),
       user: {
         customer: "顾客",
         business: "商家"
       },
+      LoginId: "",
       changeFlag: 0,
       changeAgainFlag: 0,
       verfication: "",
@@ -322,6 +328,18 @@ export default {
     };
   },
   methods: {
+    myAudio() {
+      var myAudio = null;
+      myAudio = new Audio();
+      myAudio.src = audioUrl;
+      myAudio.preload;
+      // 经播放完毕 结束
+      if (myAudio.paused) {
+        try {
+          myAudio.play();
+        } catch (error) {}
+      }
+    },
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
@@ -363,6 +381,7 @@ export default {
               this.loading = false;
               if ("success" === data.result) {
                 this.$router.push({ path: "/" });
+                this.selectId();
               } else {
                 this.$message.error("账号/密码错误");
               }
@@ -373,6 +392,75 @@ export default {
         } else {
           return false;
         }
+      });
+    },
+    initWebSocket() {
+      var businessId = this.LoginId;
+      if (typeof WebSocket == "undefined") {
+        alert("该浏览器不支持websocket!");
+      } else {
+        this.websocket = new WebSocket(
+          "ws://localhost:8080/websocket/" + businessId
+        );
+        // 连接错误
+        this.websocket.onerror = this.setErrorMessage;
+
+        // 连接成功
+        this.websocket.onopen = this.setOnopenMessage;
+
+        // 收到消息的回调
+        this.websocket.onmessage = this.setOnmessageMessage;
+
+        // 连接关闭的回调
+        this.websocket.onclose = this.setOncloseMessage;
+
+        // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = this.onbeforeunload;
+      }
+    },
+    setErrorMessage() {
+      console.log(
+        "WebSocket连接发生错误   状态码：" + this.websocket.readyState
+      );
+    },
+    setOnopenMessage() {
+      console.log("WebSocket连接成功    状态码：" + this.websocket.readyState);
+    },
+    setOnmessageMessage(event) {
+      // 根据服务器推送的消息做自己的业务处理
+      console.log("服务端返回：" + event.data);
+      if (event.data == "您有新的订单，请及时处理！！！") {
+        this.myAudio();
+        this.open();
+      }
+    },
+    setOncloseMessage() {
+      console.log("WebSocket连接关闭    状态码：" + this.websocket.readyState);
+    },
+    onbeforeunload() {
+      this.closeWebSocket();
+    },
+    closeWebSocket() {
+      this.websocket.close();
+    },
+    selectId() {
+      this.api({
+        url: "/login/selectId",
+        method: "post",
+        data: {
+          password: this.loginForm.password,
+          username: this.loginForm.username
+        }
+      }).then(data => {
+        this.LoginId = data.id;
+        this.initWebSocket();
+      });
+    },
+    open() {
+      this.$notify({
+        title: "您有新的顾客订单，请及时处理！",
+        message: "小谷已为您自动接单！",
+        duration: 0
       });
     },
     changePassword() {
@@ -414,8 +502,6 @@ export default {
           }
         }).then(data => {
           this.verfication = data.code;
-          console.log("data=" + data);
-          console.log("data.code=" + data.code);
           this.$message({
             type: "success",
             message: "验证码已发送至您的邮箱，请注意查收！"
@@ -475,9 +561,20 @@ $light_gray: #eee;
   @include relative;
   height: 100vh;
   background-color: $bg;
+  background: url("../../assets/3.jpg");
   input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #293444 inset !important;
     -webkit-text-fill-color: #fff !important;
+  }
+  .background {
+    width: 100%;
+    height: 100%; /**宽高100%是为了图片铺满屏幕 */
+    z-index: -1;
+    position: absolute;
+  }
+  .login-container {
+    z-index: 1;
+    position: absolute;
   }
   input {
     background: transparent;

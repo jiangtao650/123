@@ -15,5 +15,14 @@
           AND u.password = #{password}
           AND u.delete_status = '1'
     </select>
+    <select id="selectId" resultType="com.alibaba.fastjson.JSONObject">
+        select
+            id
+        from
+            sys_user
+        where username=#{username}
+        and   password=#{password}
+        and   delete_status='1'
+    </select>
 
 </mapper>

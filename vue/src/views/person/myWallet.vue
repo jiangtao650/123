@@ -94,9 +94,30 @@
       label-position="left"
       style="width: 600px; margin-left:50px;"
     ></el-form>
+    <el-form>
+      <el-form-item>
+        <el-upload
+          class="upload-demo"
+          :action="uploadUrl"
+          :before-upload="handleBeforeUpload"
+          :on-error="handleUploadError"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="1"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+        </el-upload>
+      </el-form-item>
+      <el-form-item>
+        <a href="/api/orderManage/download?fileName=111.docx">下载附件</a>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 <script>
+const axios = require("axios");
 export default {
   data() {
     return {
@@ -110,13 +131,48 @@ export default {
         rechargeCustomerBalance: "0",
         password: "",
         inputValue: ""
-      }
+      },
+      uploadUrl: "/api/orderManage/upload",
+      fileList: []
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handleUploadError(error, file) {
+      console.log("文件上传出错：" + error);
+    },
+    //测试上传文件(注意web的上下文)
+    handleBeforeUpload(file) {
+      this.uploadUrl = "/api/orderManage/upload";
+      console.log("开始上传，上传的文件为：" + file);
+      let formData = new FormData();
+      formData.append("multipartFiles", file);
+      axios({
+        method: "post",
+        url: "/api/orderManage/upload",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" }
+      })
+        .then(res => {
+          console.log("文件上传返回：" + res);
+        })
+        .catch(error => {
+          console.log("文件上传异常:" + error);
+        });
+    },
+    //
     verifyPassword() {
       this.listLoading = true;
       this.api({
@@ -150,13 +206,6 @@ export default {
     },
     recharge() {
       this.listLoading = true;
-      console.log(
-        "this.myWallet.customerBalance=" + this.myWallet.customerBalance
-      );
-      console.log(
-        "this.myWallet.rechargeCustomerBalance=" +
-          this.myWallet.rechargeCustomerBalance
-      );
       this.api({
         //recharge充值的意思
         url: "/person/recharge",

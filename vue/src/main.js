@@ -8,9 +8,9 @@ import router from './router'
 import store from './store'
 import '@/icons' // icon
 import '@/permission' // 权限
-import {default as api} from './utils/api'
-import {hasPermission} from "./utils/hasPermission";
-Vue.use(ElementUI, {locale})
+import { default as api } from './utils/api'
+import { hasPermission } from "./utils/hasPermission";
+Vue.use(ElementUI, { locale })
 Vue.prototype.api = api
 //全局的常量
 Vue.prototype.hasPerm = hasPermission
@@ -21,5 +21,5 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: {App}
+  components: { App }
 })

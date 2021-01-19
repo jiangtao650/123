@@ -100,7 +100,6 @@ public class OrderServiceImpl implements OrderService {
         return CommonUtil.successJson(list);
     }
 
-
     @Override
     public JSONObject submitPaymentWay(JSONObject jsonObject) {
         orderDao.submitPaymentWay(jsonObject);
@@ -109,8 +108,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public JSONObject singleOrder(JSONObject jsonObject) {
+        Session session = SecurityUtils.getSubject().getSession();
+        JSONObject userInfo = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
+        jsonObject.put("userId", userInfo.get("userId"));
+        CommonUtil.fillPageParam(jsonObject);
+        int count = orderDao.singleOrderCount(jsonObject);
         List<JSONObject> list = orderDao.singleOrder(jsonObject);
-        return CommonUtil.successJson(list);
+        return CommonUtil.successPage(jsonObject, list, count);
     }
 
     @Override
@@ -126,13 +130,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public JSONObject sendMessageToBusiness(JSONObject jsonObject) {
-        String businessId = orderDao.orderSelectBusinessId(jsonObject);
-        String message = "您有新的顾客订单，请及时处理！！！";
+        String toBusinessId = orderDao.orderSelectBusinessId(jsonObject);
+        String message = "您有新的订单，请及时处理！！！";
         try {
-            WebSocketServer.sendInfo(message, businessId);
+            WebSocketServer.sendMessageTo(message, toBusinessId);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return CommonUtil.successJson();
     }
+
 }

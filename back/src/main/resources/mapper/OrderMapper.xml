@@ -69,22 +69,45 @@
         ON
         a.order_uuid=b.order_uuid
         where
-        a.order_uuid=#{0} and delete_status=1
+        a.order_uuid=#{0} and a.delete_status=1
     </select>
     <select id="orderCount" resultType="java.lang.Integer">
-        select count(*) from order_list where business_id=#{userId} and delete_status=1 order by created_time LIMIT #{offSet}, #{pageRow}
+        select count(*) from order_list where business_id=#{userId} and delete_status=1
     </select>
     <select id="orderList" resultType="com.alibaba.fastjson.JSONObject">
         select
-        date_format(created_time, '%Y-%m-%d %H:%i:%s') createdTime,order_uuid orderUuid,order_status orderStatus,
-        payment_way paymentWay,refund_order_status refundOrderStatus,customer_name customerName,
-        business_id businessId,customer_address customerAddress,customer_phone_number customerPhoneNumber,
-        total_price totalPrice
-        from order_list
-        where business_id=#{userId} and delete_status=1
-        order by created_time desc
+        date_format(created_time, '%Y-%m-%d %H:%i:%s') createdTime,
+        order_uuid               orderUuid,
+        order_status             orderStatus,
+        payment_way              paymentWay,
+        refund_order_status      refundOrderStatus,
+        customer_name            customerName,
+        business_id              businessId,
+        customer_address         customerAddress,
+        customer_phone_number    customerPhoneNumber,
+        total_price              totalPrice
+        from
+        order_list
+        where
+        business_id=#{userId}
+        and
+        delete_status=1
+        order by
+        created_time
+        desc
+        LIMIT #{offSet}, #{pageRow}
     </select>
     <select id="orderSelectBusinessId" resultType="java.lang.String">
         select business_id businessId from order_list where delete_status=1 and order_uuid=#{orderNumbers}
+    </select>
+    <select id="singleOrderCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        order_list
+        where
+        delete_status=1
+        and
+        business_id=#{userId}
     </select>
 </mapper>

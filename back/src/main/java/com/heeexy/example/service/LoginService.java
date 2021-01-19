@@ -30,4 +30,6 @@ public interface LoginService {
 	 * 退出登录
 	 */
 	JSONObject logout();
+
+	JSONObject selectId(JSONObject jsonObject);
 }

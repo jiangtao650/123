@@ -24,4 +24,6 @@ public interface OrderDao {
     void createOrderList(JSONObject orderList);
 
     String orderSelectBusinessId(JSONObject jsonObject);
+
+    int singleOrderCount(JSONObject jsonObject);
 }
